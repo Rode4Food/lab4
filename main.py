@@ -1,10 +1,3 @@
-#user_id = "203083218"
-#access_token = "vk1.a.3I32wiuBEpEAYVDTKxp5CfwW9Pwm-vG7J83F9xVcXtbCYVXTkslgXP-3FU0l15__WjJXPlZ2oUPsVw54xoJvoKJimZe-56Vt7BtV_u0gI90NISlF6BQ4urDWrx8YPrkx-O-1vw_ZdeHzs3FOfEahJs5OTlTS-4nOCQ_27KEf3iKoGToD4mT4VsIrvUhqscd9y5zBbYWxfC3G2YTaSwABIg"
-#uri = "bolt://localhost:7687"  # e.g., "bolt://localhost:7687"
-#username = "neo4j"
-#password = "neo4jlab4"
-#e4fcdabce4fcdabce4fcdabcefe49c855dee4fce4fcdabc83d44596ca498d07f58fd16d
-
 
 import requests
 import os
