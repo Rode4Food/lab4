@@ -181,11 +181,11 @@ def main():
     db = Neo4jDatabase("bolt://localhost:7687", "neo4j", "neo4jlab4")
 
     user_data = get_user_data_recursive(user_id, access_token, depth=2)
-    print("Сбор данных заверешн")
+    print("Сбор данных завершен")
     print("Загрузка данных в БД")
     db.insert_data(user_data)
 
     db.close()
-
+    print("Загрузка данных в БД завершена")
 if __name__ == "__main__":
     main()
