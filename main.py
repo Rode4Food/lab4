@@ -53,15 +53,24 @@ def get_all_subscriptions(user_id, access_token):
 def get_user_data_recursive(user_id, access_token, depth=2):
     data = []
     try:
+        # Получаем информацию о пользователе
+        response = vk_request("users.get", access_token,
+                               {"user_ids": user_id, "fields": "screen_name,first_name,last_name,sex,city"})
+        user_info = response.get('response', [{}])[0]  # Получаем первый элемент или пустой словарь
+        if not user_info.get("id"):
+            # Если данных нет, пропускаем пользователя
+            return data
 
-        user_info = vk_request("users.get", access_token,
-                               {"user_ids": user_id, "fields": "screen_name,first_name,last_name,sex,city"})['response'][0]
+        # Получаем данные о подписчиках, подписках, друзьях и группах
+        followers = get_all_followers(user_id, access_token) or []
+        subscriptions = get_all_subscriptions(user_id, access_token) or []
+        friends_response = vk_request("friends.get", access_token,
+                                       {"user_id": user_id, "fields": "screen_name,first_name,last_name"})
+        friends = friends_response.get('response', {}).get('items', []) or []
+        groups_response = vk_request("groups.get", access_token, {"user_id": user_id, "extended": 1})
+        groups = groups_response.get('response', {}).get('items', []) or []
 
-        followers = get_all_followers(user_id, access_token)
-        subscriptions = get_all_subscriptions(user_id, access_token)
-        friends = vk_request("friends.get", access_token, {"user_id": user_id, "fields": "screen_name,first_name,last_name"})['response'].get('items', [])
-        groups = vk_request("groups.get", access_token, {"user_id": user_id, "extended": 1})['response']['items']
-
+        # Формируем данные о пользователе
         user_data = {
             "id": user_info.get("id"),
             "screen_name": user_info.get("screen_name"),
@@ -71,22 +80,31 @@ def get_user_data_recursive(user_id, access_token, depth=2):
             "followers": followers,
             "subscriptions": subscriptions,
             "friends": friends,
-            "groups": [{"id": group["id"], "name": group["name"], "screen_name": group.get("screen_name")} for group in groups]
+            "groups": [
+                {"id": group.get("id"), "name": group.get("name"), "screen_name": group.get("screen_name")}
+                for group in groups
+            ]
         }
         data.append(user_data)
 
-
+        # Рекурсивно собираем данные для вложенных пользователей
         if depth > 1:
-            for follower_id in followers:
-                data.extend(get_user_data_recursive(follower_id, access_token, depth - 1))
-            for subscription_id in subscriptions:
-                data.extend(get_user_data_recursive(subscription_id, access_token, depth - 1))
+            for follower in followers:
+                if "id" in follower:
+                    data.extend(get_user_data_recursive(follower["id"], access_token, depth - 1))
+            for subscription in subscriptions:
+                if "id" in subscription:
+                    data.extend(get_user_data_recursive(subscription["id"], access_token, depth - 1))
             for friend in friends:
-                data.extend(get_user_data_recursive(friend['id'], access_token, depth - 1))
+                if "id" in friend:
+                    data.extend(get_user_data_recursive(friend['id'], access_token, depth - 1))
 
     except Exception as e:
-       pass
+        # Сохраняем информацию об ошибке для отладки (можно выключить в production)
+        # print(f"Error fetching data for user {user_id}: {e}")
+        pass
     return data
+
 
 
 
