@@ -85,7 +85,7 @@ def get_user_data_recursive(user_id, access_token, depth=2):
                 data.extend(get_user_data_recursive(friend['id'], access_token, depth - 1))
 
     except Exception as e:
-        print(f"Error fetching data: {e}")
+       pass
     return data
 
 
@@ -162,9 +162,9 @@ def main():
     # Initialize Neo4j connection
     db = Neo4jDatabase("bolt://localhost:7687", "neo4j", "neo4jlab4")
 
-    user_data = get_user_data_recursive(user_id, access_token, depth=5)
-
-
+    user_data = get_user_data_recursive(user_id, access_token, depth=2)
+    print("Сбор данных заверешн")
+    print("Загрузка данных в БД")
     db.insert_data(user_data)
 
     db.close()
