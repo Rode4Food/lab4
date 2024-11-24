@@ -26,7 +26,7 @@ def get_all_followers(user_id, access_token):
     offset = 0
     while True:
         response = vk_request("users.getFollowers", access_token,
-                               {"user_id": user_id, "offset": offset, "count": 100, "fields": "first_name,last_name,screen_name"})
+                               {"user_id": user_id, "offset": offset, "count": 1000, "fields": "first_name,last_name,screen_name"})
         items = response['response'].get('items', [])
         if not items:
             break
@@ -40,7 +40,7 @@ def get_all_subscriptions(user_id, access_token):
     offset = 0
     while True:
         response = vk_request("users.getSubscriptions", access_token,
-                              {"user_id": user_id, "offset": offset, "count": 100, "fields": "first_name,last_name,screen_name"})
+                              {"user_id": user_id, "offset": offset, "count": 1000, "fields": "first_name,last_name,screen_name"})
         items = response['response'].get('items', [])
         if not items:
             break
